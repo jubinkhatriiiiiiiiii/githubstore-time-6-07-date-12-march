@@ -224,6 +224,7 @@ private fun EmptyReposContent(
     modifier: Modifier = Modifier
 ) {
     val message = when (filter) {
+        RepoFilterType.ALL -> stringResource(Res.string.no_repos)
         RepoFilterType.WITH_RELEASES -> stringResource(Res.string.no_repos_with_releases)
         RepoFilterType.INSTALLED -> stringResource(Res.string.no_installed_repos)
         RepoFilterType.FAVORITES -> stringResource(Res.string.no_favorite_repos)

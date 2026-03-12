@@ -351,6 +351,7 @@
     <string name="showing_x_of_y_repositories">Showing %1$d of %2$d repositories</string>
 
     <!-- Developer Profile - Empty States -->
+    <string name="no_repos">No repositories found</string>
     <string name="no_repos_with_releases">No repositories with installable releases</string>
     <string name="no_installed_repos">No installed repositories</string>
     <string name="no_favorite_repos">No favorite repositories</string>

@@ -75,317 +75,591 @@ Built with Kotlin Multiplatform and Compose Multiplatform for Android and Deskto
     <img src="media-resources/05.jpg" width="18%" />
 </p>
 
-<div align="center">
+## 📋 Table of Contents
 
-# 📔 Wiki & Resources
-
-Check out GitHub Store [Wiki](https://github.com/rainxchzed/Github-Store/wiki) for FAQ and useful information
-
-🌐 **Website:** [github-store.org](https://github-store.org)
-💬 **Discord:** [Join the community](https://discord.gg/x9Cvh2Z9qS)
-📜 **Privacy Policy:** [github-store.org/privacy-policy](https://github-store.org/privacy-policy/)
-
-</div>
-
----
-
-<div align="center">
-
-### 📋 Legal Notice
-
-GitHub Store is an independent, open-source project not affiliated with GitHub, Inc.  
-The name describes the app's functionality (discovering GitHub releases) and does not imply trademark ownership.  
-GitHub® is a registered trademark of GitHub, Inc.
-
-</div>
+- [🏗️ Architecture Overview](#️-architecture-overview)
+- [📁 Project Structure](#-project-structure)
+- [🔧 Core Modules](#-core-modules)
+- [🎯 Feature Modules](#-feature-modules)
+- [🚀 Features](#-features)
+- [🔄 Recent Changes](#-recent-changes)
+- [⚙️ Setup & Configuration](#️-setup--configuration)
+- [🛠️ Development](#️-development)
+- [📱 Platform Support](#-platform-support)
+- [🌐 Localization](#-localization)
+- [📄 License](#-license)
 
 ---
 
-<div align="center">
+## 🏗️ Architecture Overview
 
-# 🔃 Download
+GitHub Store follows **Clean Architecture** principles with **MVVM pattern** and is built using:
 
-</div>
+### Core Technologies
+- **Kotlin Multiplatform (KMP)** - Shared business logic across platforms
+- **Compose Multiplatform** - Unified UI framework for Android and Desktop
+- **Material 3 Design System** - Modern, adaptive UI components
+- **Coroutines & Flow** - Asynchronous programming and reactive streams
+- **Koin** - Dependency injection framework
+- **Room Database** - Local data persistence
+- **Ktor Client** - HTTP networking
+- **Kotlinx Serialization** - JSON parsing and serialization
 
-<p align="center">
-<a href="https://github.com/rainxchzed/Github-Store/releases">
-   <img src="https://i.ibb.co/q0mdc4Z/get-it-on-github.png" height="80"/>
-</a>
-<a href="https://f-droid.org/en/packages/zed.rainxch.githubstore/">
-   <img src="https://f-droid.org/badge/get-it-on.png" height="80"/>
-</a>
-<a href="https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/rainxchzed/Github-Store/">
-  <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" height="60" alt="Get it on Obtainium">
-</a>
-</p>
-
-<p align="center">
-  <a href="https://discord.gg/x9Cvh2Z9qS">
-  <img src="https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join Discord">
-</a>
-</p>
-
-> [!IMPORTANT]
-> **macOS Users:** You may see a warning that Apple cannot verify GitHub Store. This happens because the app is distributed outside the App Store and is not notarized yet. Allow it via System Settings → Privacy & Security → Open Anyway.
+### Architecture Layers
+```
+┌─────────────────────────────────────────┐
+│              Presentation               │
+│  (Compose UI, ViewModels, Navigation)   │
+├─────────────────────────────────────────┤
+│               Domain                    │
+│     (Use Cases, Models, Interfaces)     │
+├─────────────────────────────────────────┤
+│                Data                     │
+│  (Repositories, APIs, Database, Cache)  │
+└─────────────────────────────────────────┘
+```
 
 ---
 
-<div align="center">
+## 📁 Project Structure
 
-# 🏆 Featured In
+```
+GitHub-Store/
+├── composeApp/                    # Main application module
+│   ├── src/
+│   │   ├── androidMain/          # Android-specific code
+│   │   ├── commonMain/           # Shared code across platforms
+│   │   └── jvmMain/              # Desktop-specific code
+│   └── build.gradle.kts
+├── core/                         # Core shared modules
+│   ├── data/                     # Data layer implementation
+│   ├── domain/                   # Business logic and models
+│   └── presentation/             # Shared UI components
+├── feature/                      # Feature-specific modules
+│   ├── home/                     # Home screen with trending repos
+│   ├── search/                   # Repository search functionality
+│   ├── details/                  # Repository details and installation
+│   ├── dev-profile/              # Developer profile and repositories
+│   ├── auth/                     # GitHub authentication
+│   ├── apps/                     # Installed apps management
+│   ├── favourites/               # Favorite repositories
+│   ├── starred/                  # GitHub starred repositories
+│   └── profile/                  # User profile and settings
+├── build-logic/                  # Build configuration and plugins
+└── gradle/                       # Gradle wrapper and dependencies
+```
+---
 
-</div>
+## 🔧 Core Modules
 
-<p align="center">
-<a href="https://www.youtube.com/@howtomen">
-  <img src="https://img.shields.io/badge/HowToMen-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Featured by HowToMen">
-</a>
-</br>
-<strong>HowToMen:</strong> <a href="https://www.youtube.com/watch?v=7favc9MDedQ">Top 20 Best Android Apps 2026</a> | <a href="https://www.youtube.com/watch?v=VR-MEwPDw4k">Top 12 App Stores that are Better than Google Play Store </a>
-</br>
-<strong>HelloGitHub:</strong> <a href="https://hellogithub.com/en/repository/rainxchzed/Github-Store">Featured Project</a>
-</p>
+### Core Data (`core/data`)
+**Purpose**: Implements data layer with repositories, API clients, and local storage.
+
+**Key Components**:
+- **GitHub API Client** - REST API integration using Ktor
+- **Room Database** - Local storage for apps, favorites, and cache
+- **Repository Implementations** - Data access layer following repository pattern
+- **Platform Services** - Android/Desktop specific implementations (installers, file managers)
+
+**Key Files**:
+- `GitHubApiService.kt` - GitHub REST API client
+- `AppDatabase.kt` - Room database configuration
+- `*RepositoryImpl.kt` - Repository implementations
+- `AndroidInstaller.kt` / `DesktopInstaller.kt` - Platform-specific installers
+
+### Core Domain (`core/domain`)
+**Purpose**: Contains business logic, use cases, and domain models.
+
+**Key Components**:
+- **Models** - Data classes representing business entities
+- **Use Cases** - Business logic operations
+- **Repository Interfaces** - Contracts for data access
+- **Utilities** - Shared business logic helpers
+
+**Key Files**:
+- `model/` - Domain models (Repository, Release, User, etc.)
+- `repository/` - Repository interfaces
+- `usecase/` - Business logic use cases
+
+### Core Presentation (`core/presentation`)
+**Purpose**: Shared UI components, themes, and presentation utilities.
+
+**Key Components**:
+- **Design System** - Material 3 theme, colors, typography
+- **Reusable Components** - Common UI elements
+- **Navigation** - Shared navigation logic
+- **Resources** - Strings, images, and other resources
+
+**Key Files**:
+- `theme/` - Material 3 theme configuration
+- `components/` - Reusable UI components
+- `res/` - Shared resources (strings, drawables)
+
+---
+
+## 🎯 Feature Modules
+
+Each feature module follows the same structure: `domain/`, `data/`, `presentation/`
+
+### 🏠 Home (`feature/home`)
+**Purpose**: Main landing screen with trending and popular repositories.
+
+**Features**:
+- Trending repositories with time-based filters
+- Hot releases section
+- Most popular projects
+- Platform-aware content filtering
+- Pull-to-refresh functionality
+
+**Key Components**:
+- `HomeViewModel` - Manages home screen state and data loading
+- `HomeScreen` - Main UI with sections and filtering
+- `TrendingSection` - Displays trending repositories
+- `HomeRepository` - Fetches trending and popular data
+
+### 🔍 Search (`feature/search`)
+**Purpose**: Advanced repository search with filters and sorting.
+
+**Features**:
+- Real-time search with debouncing
+- Advanced filters (language, stars, topics)
+- Sorting options (relevance, stars, updated)
+- Search history and suggestions
+- Platform-specific result filtering
+
+**Key Components**:
+- `SearchViewModel` - Handles search logic and state
+- `SearchScreen` - Search UI with filters and results
+- `SearchRepository` - GitHub search API integration
+- `SearchFilters` - Advanced filtering options
+
+### 📋 Details (`feature/details`)
+**Purpose**: Repository details, releases, and installation management.
+
+**Features**:
+- Repository information and statistics
+- Release browser with version history
+- README rendering with Markdown support
+- Installation management (install, update, uninstall)
+- Developer profile navigation
+- Deep linking support
+
+**Key Components**:
+- `DetailsViewModel` - Repository details and installation logic
+- `DetailsScreen` - Main details UI
+- `ReleaseSection` - Release browser and installer picker
+- `ReadmeSection` - Markdown README rendering
+- `AuthorSection` - Developer information and profile link
+### 👤 Developer Profile (`feature/dev-profile`)
+**Purpose**: Developer profile with repository listing and filtering.
+
+**Features**:
+- Developer information (avatar, bio, stats)
+- Repository listing with advanced filtering
+- Filter options: All, With Releases, Installed, Favorites
+- Search within developer's repositories
+- Sorting by stars, name, or last updated
+- Repository management (favorite, install)
+
+**Key Components**:
+- `DeveloperProfileViewModel` - Profile data and repository management
+- `DeveloperProfileScreen` - Main profile UI
+- `ProfileInfoCard` - Developer information display
+- `FilterSortControls` - Repository filtering and sorting
+- `DeveloperRepoItem` - Individual repository card
+
+**Recent Changes**:
+- ✅ **Added "All" filter option** - Now shows all repositories by default, not just those with releases
+- ✅ **Improved filtering logic** - Better user experience for browsing developer repositories
+- ✅ **Enhanced repository discovery** - Users can now see the full scope of a developer's work
+
+### 🔐 Auth (`feature/auth`)
+**Purpose**: GitHub OAuth authentication and user management.
+
+**Features**:
+- GitHub OAuth 2.0 integration
+- Secure token storage
+- User profile management
+- Authentication state handling
+- Deep link callback handling
+
+**Key Components**:
+- `AuthViewModel` - Authentication flow management
+- `LoginScreen` - OAuth login interface
+- `AuthRepository` - Token management and API integration
+- `AuthInterceptor` - Automatic token injection for API calls
+
+### 📱 Apps (`feature/apps`)
+**Purpose**: Installed applications management and monitoring.
+
+**Features**:
+- Installed app tracking (Android)
+- Update notifications
+- App management (open, uninstall, downgrade)
+- Installation history
+- Package monitoring and sync
+
+**Key Components**:
+- `AppsViewModel` - Installed apps state management
+- `AppsScreen` - Installed apps listing
+- `AppItem` - Individual app management UI
+- `PackageMonitor` - Android package change detection
+
+### ⭐ Favourites (`feature/favourites`)
+**Purpose**: User's favorite repositories management.
+
+**Features**:
+- Local favorites storage
+- Sync with GitHub stars
+- Favorite management (add, remove)
+- Offline access to favorites
+- Export/import functionality
+
+### 🌟 Starred (`feature/starred`)
+**Purpose**: GitHub starred repositories integration.
+
+**Features**:
+- GitHub stars synchronization
+- Starred repositories browsing
+- Star management from within the app
+- Offline caching of starred repos
+
+### 👤 Profile (`feature/profile`)
+**Purpose**: User profile and application settings.
+
+**Features**:
+- User profile information
+- App settings and preferences
+- Theme customization
+- Language selection
+- Cache management
+- About and legal information
 
 ---
 
 ## 🚀 Features
 
-- **Smart discovery**
-    - Home sections for “Trending”, “Hot Release”, and “Most Popular” projects with time‑based filters.
-    - Only repos with valid installable assets are shown.
-    - Platform‑aware topic scoring so Android/desktop users see relevant apps first.
-    - Overhauled search with improved relevance ranking and performance.
+### Smart Discovery
+- **Home sections** for "Trending", "Hot Release", and "Most Popular" projects with time‑based filters
+- **Platform‑aware filtering** - Only repos with valid installable assets are shown
+- **Topic scoring** - Android/desktop users see relevant apps first
+- **Enhanced search** with improved relevance ranking and performance
 
-- **Release browser & installs**
-    - Release picker to browse and install from any release, not just the latest.
-    - Fetches all releases for each repository.
-    - Single “Install latest” action, plus an expandable list of all available releases and their installers.
-    - Manual install option with automatic compatibility checks.
+### Release Management
+- **Release browser** to browse and install from any release, not just the latest
+- **Compatibility checking** - Automatic platform and architecture matching
+- **Single-click installation** with expandable release history
+- **Manual install option** with compatibility validation
 
-- **Rich details screen**
-    - App name, version, “Install latest” button, and share action.
-    - Stars, forks, open issues.
-    - Rendered README content (“About this app”).
-    - Release notes with Markdown formatting for any selected release.
-    - List of installers with platform labels and file sizes.
-    - Deep linking support — open repository details directly via URL.
-    - Developer profile screen to explore a developer’s repositories and activity.
+### Rich Repository Details
+- **Comprehensive information** - Stars, forks, issues, description
+- **Rendered README** content as "About this app"
+- **Release notes** with Markdown formatting
+- **Installer listings** with platform labels and file sizes
+- **Deep linking** support for direct repository access
+- **Developer profiles** to explore author's other repositories
 
-- **App management**
-    - Open, uninstall, and downgrade installed apps directly from GitHub Store.
-    - Android: APK architecture matching (armv7/armv8), package monitoring, and update tracking.
-    - Desktop (Windows/macOS/Linux): downloads installers to the user’s Downloads folder and opens them with the default handler.
+### Application Management
+- **Installation tracking** - Monitor installed apps and updates
+- **App actions** - Open, uninstall, downgrade directly from GitHub Store
+- **Architecture matching** - Android APK compatibility (armv7/armv8)
+- **Desktop integration** - Downloads to system folders with default handlers
 
-- **Starred repositories**
-    - Save and browse your starred GitHub repositories from within the app.
+### Cross-Platform Experience
+- **Unified UI** - Same interface across Android and Desktop
+- **Platform-native behavior** - Respects OS conventions
+- **Adaptive design** - Responsive layouts for different screen sizes
+- **Material 3** - Modern design system with dynamic theming
+---
 
-- **Network & performance**
-    - Dynamic proxy support for configurable network routing.
-    - Enhanced caching system for faster loading and reduced API usage.
+## 🔄 Recent Changes
 
-- **Cross‑platform UX**
-    - Android: native splash screen, session expiration handling, and adaptive icon.
-    - Desktop: Linux AppImage support prioritized alongside DEB and RPM formats.
-    - Localized in 12 languages: English, Spanish, French, Japanese, Korean, Polish, Russian, Chinese, Bengali, Hindi, Italian, and Turkish.
+### Developer Profile Enhancements
+- **🆕 All Repositories Filter**: Added new "All" filter option to show repositories without releases
+- **🔧 Default Filter Changed**: Developer profiles now show all repositories by default instead of only those with releases
+- **✨ Improved Discovery**: Users can now explore the complete scope of a developer's work, not just released projects
+- **🎯 Better UX**: More intuitive filtering system for browsing developer repositories
+
+### Technical Improvements
+- **📱 Enhanced Repository Filtering**: Updated `RepoFilterType` enum with new `ALL` option
+- **🔄 Improved State Management**: Better default state handling in `DeveloperProfileState`
+- **🎨 UI Consistency**: Updated filter controls and empty states for better user experience
+- **🌐 Localization**: Added new string resources for the "All" filter option
 
 ---
 
-## 🔍 How does my app appear in GitHub Store?
+## ⚙️ Setup & Configuration
 
-GitHub Store does not use any private indexing or manual curation rules.  
-Your project can appear automatically if it follows these conditions:
+### Prerequisites
+- **Android Studio** (latest stable version)
+- **JDK 17** or higher
+- **Android SDK** (API 24+)
+- **Git** for version control
 
-1. **Public repository on GitHub**
-    - Visibility must be `public`.
+### GitHub OAuth Setup
+1. **Create GitHub OAuth App**:
+   - Go to GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
+   - Set Homepage URL: `https://github.com/yourusername/GitHub-Store`
+   - Set Authorization callback URL: `githubstore://callback`
 
-2. **Installable assets in the latest release**
-    - The latest release must contain at least one asset file with a supported extension:
-        - Android: `.apk`
-        - Windows: `.exe`, `.msi`
-        - macOS: `.dmg`, `.pkg`
-        - Linux: `.deb`, `.rpm`, `.AppImage`
-    - GitHub Store ignores GitHub’s auto‑generated source artifacts (`Source code (zip)` /
-      `Source code (tar.gz)`).
+2. **Configure Local Properties**:
+   ```properties
+   # local.properties
+   GITHUB_CLIENT_ID=your_github_client_id_here
+   ```
 
-3. **Discoverable by search / topics**
-    - Repositories are fetched via the public GitHub Search API.
-    - Topic, language, and description help the ranking:
-        - Android apps: topics like `android`, `mobile`, `apk`.
-        - Desktop apps: topics like `desktop`, `windows`, `linux`, `macos`, `compose-desktop`,
-          `electron`.
-    - Having at least a few stars makes it more likely to appear under Trending/Hot Release/Most Popular sections.
+3. **Build Configuration**:
+   ```bash
+   # Clone the repository
+   git clone https://github.com/rainxchzed/GitHub-Store.git
+   cd GitHub-Store
+   
+   # Add your GitHub Client ID to local.properties
+   echo "GITHUB_CLIENT_ID=your_client_id" >> local.properties
+   
+   # Build the project
+   ./gradlew build
+   ```
 
-If your repo meets these conditions, GitHub Store can find it through search and show it
-automatically—no manual submission required.
-
----
-
-## 🧭 How GitHub Store works (high‑level)
-
-1. **Search**
-    - Uses GitHub’s `/search/repositories` endpoint with platform‑aware queries.
-    - Applies simple scoring based on topics, language, and description.
-    - Filters out archived repos and those with too few signals.
-
-2. **Release + asset check**
-    - For candidate repos, calls `/repos/{owner}/{repo}/releases/latest`.
-    - Checks the `assets` array for platform‑specific file extensions.
-    - If no suitable asset is found, the repo is excluded from results.
-    - Users can also browse all releases via the release picker.
-
-3. **Details screen**
-    - Repository info: name, owner, description, stars, forks, issues.
-    - Release browser: browse any release with its tag, date, changelog, and assets.
-    - README: loaded from the default branch and rendered as “About this app”.
-    - Developer profile link and share action.
-    - Accessible via deep links for direct navigation.
-
-4. **Install flow**
-    - When the user taps “Install latest” or selects a specific release:
-        - Picks the best matching asset for the current platform (with architecture matching on Android).
-        - Streams the download with caching support.
-        - Delegates to the OS installer (APK installer on Android, default handler on desktop).
-        - On Android, records the installation in a local database and uses package monitoring to keep the installed list in sync.
-        - Supports open, uninstall, and downgrade actions for managed apps.
-
----
-
-## ✅ Pros / Why use GitHub Store?
-
-- **No more hunting through GitHub releases**
-  See only repos that actually ship binaries for your platform.
-
-- **Knows what you installed**
-  Tracks apps installed via GitHub Store (Android) and highlights when new releases are available, so you can update them without hunting through GitHub again.
-
-- **Always up to date**
-  Installs default to the latest published release, with the option to browse and install from
-  any previous release via the release picker.
-
-- **Uniform experience across platforms**  
-  Same UI and logic for Android and desktop, with platform‑native install behavior.
-
-- **Open source & extensible**  
-  Written in KMP with a clear separation between networking, domain logic, and UI—easy to fork,
-  extend, or adapt.
-
----
-
-## 🔐 GitHub Store APK Signing Certificate
-
-All official GitHub Store releases are signed with the following certificate fingerprint:
-
-SHA-256:
-`B7:F2:8E:19:8E:48:C1:93:B0:38:C6:5D:92:DD:F7:BC:07:7B:0D:B5:9E:BC:9B:25:0A:6D:AC:48:C1:18:03:CA`
-
----
-
-## 🔑 GitHub OAuth Configuration
-
-**TL;DR**
-1. Create a GitHub OAuth App  
-2. Copy **Client ID**  
-3. Put it in `local.properties`
-
-<details>
-<summary><strong>Show full setup guide</strong></summary>
-
-  <br/>
-  
-### 1 - Create a GitHub OAuth App
-Go to:
-**GitHub → Settings → Developer settings → OAuth Apps → New OAuth App**
-
-| Field                          | Value                                       |
-| ------------------------------ | ------------------------------------------- |
-| **Application name**           | Anything you like (e.g. *GitHub Store Dev*) |
-| **Homepage URL** | `https://github.com/username/repo_name`                   |
-| **Authorization callback URL** | `githubstore://callback`                    |
-
-Then click **Create application**.
-
-### 2 - Copy Your Client ID
-After creating the app, GitHub will show:
-- **Client ID** ← you need this
-- **Client Secret** ← ❗ NOT required for this project
-
-### 3 - Add It to Your Project
-Open your project’s `local.properties` file (root of the project) and add:
+### Environment Variables
 ```properties
-GITHUB_CLIENT_ID=YOUR_CLIENT_ID_HERE
+# local.properties
+GITHUB_CLIENT_ID=your_github_oauth_client_id
 ```
 
-### 4 - Sync & Run
-Sync the project and run the app. You should now be able to sign in with GitHub.
+---
 
-### ❗ Important Notes
-- `local.properties` is **not committed to Git**, so your Client ID stays local.
-- This project only needs the **Client ID** (not the Client Secret).
-- Each developer should create their own OAuth app for development.
+## 🛠️ Development
 
-</details>
+### Building the Project
+```bash
+# Android Debug Build
+./gradlew assembleDebug
+
+# Android Release Build
+./gradlew assembleRelease
+
+# Desktop Application
+./gradlew packageDistributionForCurrentOS
+
+# Run Tests
+./gradlew test
+```
+
+### Code Style & Architecture
+- **Clean Architecture** with clear separation of concerns
+- **MVVM Pattern** with Compose UI and ViewModels
+- **Repository Pattern** for data access abstraction
+- **Dependency Injection** using Koin
+- **Reactive Programming** with Kotlin Coroutines and Flow
+
+### Key Development Principles
+1. **Shared Business Logic** - Core logic in `commonMain`
+2. **Platform-Specific Implementation** - UI and system integration in platform modules
+3. **Testable Code** - Clear interfaces and dependency injection
+4. **Performance First** - Efficient caching and lazy loading
+5. **User Experience** - Responsive UI with proper loading states
+
+### Module Dependencies
+```
+composeApp
+├── core-presentation
+├── core-domain
+├── core-data
+├── feature-home
+├── feature-search
+├── feature-details
+├── feature-dev-profile
+├── feature-auth
+├── feature-apps
+├── feature-favourites
+├── feature-starred
+└── feature-profile
+```
 
 ---
 
-## ☕ Support the project
+## 📱 Platform Support
 
-**GitHub Store** has reached **48,000+ active users** and **5,500+ GitHub stars** — and it's **100% free** with no ads, no tracking, and no premium features.
+### Android
+- **Minimum SDK**: API 24 (Android 7.0)
+- **Target SDK**: API 34 (Android 14)
+- **Architecture**: ARM64, ARM32
+- **Features**: APK installation, package monitoring, update notifications
+- **Distribution**: Google Play Store, F-Droid, GitHub Releases
 
-I built and maintain this entirely on my own while finishing high school. Your support (even $3) helps me:
+### Desktop
+- **Platforms**: Windows, macOS, Linux
+- **Formats**: EXE, MSI (Windows), DMG, PKG (macOS), DEB, RPM, AppImage (Linux)
+- **Features**: System integration, file association, auto-updates
+- **Distribution**: GitHub Releases, platform-specific stores
 
-✅ **Keep the app bug-free** — respond to issues and ship fixes quickly  
-✅ **Add community-requested features** — implement what users actually need  
-✅ **Maintain infrastructure** — servers, APIs, and deployment costs
+### Shared Features
+- **UI Framework**: Compose Multiplatform
+- **Business Logic**: 100% shared Kotlin code
+- **Networking**: Ktor client with platform-specific configurations
+- **Storage**: Room database with SQLite driver
+- **Authentication**: OAuth 2.0 with secure token storage
+---
 
-### 💖 Ways to Support
+## 🌐 Localization
 
-<a href="https://www.buymeacoffee.com/rainxchzed">
-  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-☕%20$3-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee">
-</a>
+GitHub Store supports **12 languages** with full localization:
 
-<a href="https://github.com/sponsors/rainxchzed">
-  <img src="https://img.shields.io/badge/GitHub%20Sponsors-💖%20Monthly-pink?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Sponsors">
-</a>
+- 🇺🇸 **English** (Default)
+- 🇪🇸 **Spanish** (Español)
+- 🇫🇷 **French** (Français)
+- 🇯🇵 **Japanese** (日本語)
+- 🇰🇷 **Korean** (한국어)
+- 🇵🇱 **Polish** (Polski)
+- 🇷🇺 **Russian** (Русский)
+- 🇨🇳 **Chinese** (中文)
+- 🇧🇩 **Bengali** (বাংলা)
+- 🇮🇳 **Hindi** (हिन्दी)
+- 🇮🇹 **Italian** (Italiano)
+- 🇹🇷 **Turkish** (Türkçe)
 
-**Can't sponsor right now?** That's okay! You can still help by:
-- ⭐ **Starring this repo** — helps others discover GitHub Store
-- 🐛 **Reporting bugs** — makes the app better for everyone
-- 📢 **Sharing with friends** — spread the word to other developers
-- 💬 **Joining our [Discord](https://discord.gg/x9Cvh2Z9qS)** — your feedback shapes the roadmap
-
-Every bit of support—financial or not—means the world and keeps this project alive. Thank you!
+### Adding New Languages
+1. Create new string resource file: `core/presentation/src/commonMain/composeResources/values-{lang}/strings.xml`
+2. Translate all string resources from the base `values/strings.xml`
+3. Test the new language in the app settings
+4. Submit a pull request with the new translation
 
 ---
 
-## ⚠️ Disclaimer
+## 🔍 How Apps Appear in GitHub Store
 
-GitHub Store only helps you discover and download release assets that are already published on
-GitHub by third‑party developers.  
-The contents, safety, and behavior of those downloads are entirely the responsibility of their
-respective authors and distributors, not this project.
+GitHub Store uses **automatic discovery** - no manual submission required!
 
-By using GithubStore, you understand and agree that you install and run any downloaded software at
-your own risk.  
-This project does not review, validate, or guarantee that any installer is safe, free of malware, or
-fit for any particular purpose.
+### Requirements for Automatic Inclusion
+1. **Public GitHub Repository**
+2. **Latest Release with Installable Assets**:
+   - Android: `.apk` files
+   - Windows: `.exe`, `.msi` files
+   - macOS: `.dmg`, `.pkg` files
+   - Linux: `.deb`, `.rpm`, `.AppImage` files
+3. **Discoverable Metadata**:
+   - Relevant topics (e.g., `android`, `desktop`, `mobile`)
+   - Clear description
+   - Some community engagement (stars, forks)
+
+### Discovery Process
+1. **GitHub Search API** - Queries for repositories with relevant topics
+2. **Release Validation** - Checks for compatible installer files
+3. **Metadata Scoring** - Ranks based on relevance and popularity
+4. **Platform Filtering** - Shows only compatible applications
 
 ---
 
-## Star History
+## 🧭 Technical Implementation Details
 
-<a href="https://www.star-history.com/#rainxchzed/Github-Store&type=timeline&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=rainxchzed/Github-Store&type=timeline&legend=top-left" />
- </picture>
-</a>
+### GitHub API Integration
+```kotlin
+// Example API usage
+class GitHubApiService {
+    suspend fun searchRepositories(
+        query: String,
+        platform: Platform,
+        filters: SearchFilters
+    ): Result<List<Repository>>
+    
+    suspend fun getRepositoryDetails(
+        owner: String,
+        name: String
+    ): Result<RepositoryDetails>
+    
+    suspend fun getReleases(
+        owner: String,
+        name: String
+    ): Result<List<Release>>
+}
+```
 
-![Alt](https://repobeats.axiom.co/api/embed/20367dca127572e9c47db33850979d78df2c6a8b.svg "Repobeats analytics image")
+### Installation Flow
+```kotlin
+// Installation process
+class InstallationManager {
+    suspend fun installApp(
+        release: Release,
+        asset: Asset
+    ): Flow<InstallationProgress>
+    
+    suspend fun updateApp(
+        installedApp: InstalledApp,
+        newRelease: Release
+    ): Result<Unit>
+}
+```
+
+### Database Schema
+```kotlin
+@Entity(tableName = "installed_apps")
+data class InstalledApp(
+    @PrimaryKey val packageName: String,
+    val repositoryId: Long,
+    val version: String,
+    val installDate: Long,
+    val lastUpdateCheck: Long
+)
+
+@Entity(tableName = "favorite_repos")
+data class FavoriteRepo(
+    @PrimaryKey val repoId: Long,
+    val repoName: String,
+    val repoOwner: String,
+    val addedAt: Long
+)
+```
+
+---
+
+## 🔐 Security & Privacy
+
+### Data Handling
+- **Local Storage Only** - No user data sent to external servers
+- **GitHub OAuth** - Secure authentication with minimal permissions
+- **No Tracking** - No analytics or user behavior tracking
+- **Open Source** - Full transparency of data handling
+
+### Installation Security
+- **Checksum Verification** - Validates downloaded files
+- **Platform Validation** - Ensures compatibility before installation
+- **User Consent** - Clear installation prompts and permissions
+- **Sandboxed Downloads** - Isolated download directory
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+### Development Setup
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/yourusername/GitHub-Store.git`
+3. Set up GitHub OAuth (see setup section)
+4. Create a feature branch: `git checkout -b feature/your-feature`
+5. Make your changes and test thoroughly
+6. Submit a pull request
+
+### Contribution Guidelines
+- Follow the existing code style and architecture
+- Add tests for new features
+- Update documentation for significant changes
+- Ensure all platforms build successfully
+- Test on both Android and Desktop when possible
+
+### Areas for Contribution
+- 🌐 **Translations** - Add support for new languages
+- 🐛 **Bug Fixes** - Report and fix issues
+- ✨ **Features** - Implement new functionality
+- 📚 **Documentation** - Improve guides and API docs
+- 🎨 **UI/UX** - Enhance user interface and experience
+
+---
 
 ## 📄 License
 
-GitHub Store will be released under the **Apache License, Version 2.0**.
+GitHub Store is released under the **Apache License, Version 2.0**.
 
 ```
 Copyright 2025 rainxchzed
@@ -402,3 +676,46 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+---
+
+## 🙏 Acknowledgments
+
+- **GitHub** - For providing the excellent API that makes this project possible
+- **JetBrains** - For Kotlin Multiplatform and Compose Multiplatform
+- **Material Design** - For the beautiful design system
+- **Open Source Community** - For the amazing libraries and tools used in this project
+
+---
+
+<div align="center">
+
+### 💖 Support the Project
+
+If GitHub Store has been helpful to you, consider supporting its development:
+
+<a href="https://www.buymeacoffee.com/rainxchzed">
+  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-☕%20$3-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee">
+</a>
+
+<a href="https://github.com/sponsors/rainxchzed">
+  <img src="https://img.shields.io/badge/GitHub%20Sponsors-💖%20Monthly-pink?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Sponsors">
+</a>
+
+**Can't sponsor?** You can still help by:
+- ⭐ Starring this repository
+- 🐛 Reporting bugs and issues
+- 📢 Sharing with friends and colleagues
+- 💬 Joining our [Discord community](https://discord.gg/x9Cvh2Z9qS)
+
+</div>
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [rainxchzed](https://github.com/rainxchzed)**
+
+[Website](https://github-store.org) • [Discord](https://discord.gg/x9Cvh2Z9qS) • [Privacy Policy](https://github-store.org/privacy-policy/)
+
+</div>
